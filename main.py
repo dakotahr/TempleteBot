@@ -6,13 +6,18 @@ from flask import Flask
 from highrise import BaseBot
 from highrise.models import Position
 
-# Importamos la configuración desde el archivo config.py
-import config
+# =========================================================================
+# ⚙️ CONFIGURACIÓN DE LA PLANTILLA (CAMBIAR ESTOS DATOS PARA CADA PROYECTO)
+# =========================================================================
+# Escribí el nombre de usuario de Telegram/Highrise del dueño (en minúsculas)
+USER_DUENO = "PONER_AQUI_EL_USUARIO_DEL_DUENO"  
 
-# Asignamos las variables de la plantilla desde config.py
-USER_DUENO = config.ownerName
-ID_BOT_SALA = config.botID
-NOMBRE_DEL_BOT_WEB = f"¡Bot {config.botName} está activo!"
+# Poné el ID numérico/técnico único de este bot (para evitar que se auto-afecte)
+ID_BOT_SALA = "PONER_AQUI_EL_ID_DEL_BOT"  
+
+# Nombre personalizado para el panel web del servidor gratuito
+NOMBRE_DEL_BOT_WEB = "¡Bot Plantilla Base está activa!"
+# =========================================================================
 
 
 # ==========================================
@@ -61,9 +66,9 @@ class Bot(BaseBot):
         self.usuario_a_seguir = None
         self.trivia_activa = False
         self.respuesta_trivia = ""
-        self.bot_pos_x = config.coordinates['x']
-        self.bot_pos_y = config.coordinates['y']
-        self.bot_pos_z = config.coordinates['z']
+        self.bot_pos_x = 0
+        self.bot_pos_y = 0
+        self.bot_pos_z = 0
 
     # Tarea repetitiva para anuncios y seguimiento automático
     async def bucle_segundo_plano(self):
@@ -92,7 +97,7 @@ class Bot(BaseBot):
                 await self.highrise.chat(frase)
 
     async def on_start(self, session_metadata, room_permissions=None) -> None:
-        print(f"¡{config.botName} ingresó a la sala con éxito!")
+        print("¡El bot ingresó a la sala con éxito!")
         await asyncio.sleep(2)
         await self.highrise.send_emote("dance-tiktok8")
         # Iniciamos el bucle inteligente en segundo plano
@@ -110,62 +115,62 @@ class Bot(BaseBot):
             return
 
         # --- COMANDOS BÁSICOS ANTERIORES (CONSERVADOS) ---
-        if msg == f"{config.prefix}hola":
+        if msg == "!hola":
             await self.highrise.chat(f"¡Hola @{user.username}! Bienvenido/a a la sala. ✨")
-        elif msg == f"{config.prefix}bailar":
+        elif msg == "!bailar":
             await self.highrise.chat("¡A bailar todo el mundo! 💃")
             await self.highrise.send_emote("dance-tiktok8")
-        elif msg == f"{config.prefix}aplaudir":
+        elif msg == "!aplaudir":
             await self.highrise.send_emote("emote-applause")
 
         # --- CONTADOR DE VISITAS ---
-        elif msg == f"{config.prefix}visitas":
+        elif msg == "!visitas":
             await self.highrise.chat(f"📊 Esta sala ha recibido {self.contador_visitas} visitas desde que estoy online.")
 
         # --- DETECTAR CUALQUIER EMOTE INTELIGENTE ---
-        elif msg.startswith(f"{config.prefix}emote "):
-            emote_solicitado = message.replace(f"{config.prefix}emote ", "").strip()
+        elif msg.startswith("!emote "):
+            emote_solicitado = message.replace("!emote ", "").strip()
             try:
                 await self.highrise.send_emote(emote_solicitado)
             except:
                 await self.highrise.send_whisper(user.id, "No se pudo ejecutar ese emote. Asegúrate de escribir bien el ID técnico.")
 
         # --- COMANDO NUEVO: HACER BAILAR AL USUARIO QUE CORRE EL COMANDO ---
-        elif msg.startswith(f"{config.prefix}me "):
-            emote_solicitado = message.replace(f"{config.prefix}me ", "").strip()
+        elif msg.startswith("!me "):
+            emote_solicitado = message.replace("!me ", "").strip()
             try:
                 await self.highrise.send_emote(emote_solicitado, user.id)
             except Exception as e:
-                print(f"Error en comando {config.prefix}me: {e}")
+                print(f"Error en comando !me: {e}")
 
         # --- COMANDO NUEVO: HACER BAILAR A TODOS EN LA SALA (Solo Dueño) ---
-        elif msg.startswith(f"{config.prefix}todos ") and user.username.lower() == USER_DUENO.lower():
-            emote_solicitado = message.replace(f"{config.prefix}todos ", "").strip()
+        elif msg.startswith("!todos ") and user.username.lower() == USER_DUENO.lower():
+            emote_solicitado = message.replace("!todos ", "").strip()
             try:
                 await self.highrise.chat(f"🥳 ¡Coreografía masiva! Todos hacemos: {emote_solicitado} 🥳")
                 lista_usuarios = await self.highrise.get_room_users()
                 for u, pos in lista_usuarios.content:
                     await self.highrise.send_emote(emote_solicitado, u.id)
             except Exception as e:
-                print(f"Error en comando {config.prefix}todos: {e}")
+                print(f"Error en comando !todos: {e}")
 
         # --- SISTEMA DE SEGUIMIENTO ---
-        elif msg == f"{config.prefix}seguir":
+        elif msg == "!seguir":
             self.usuario_a_forzar = None
             self.usuario_a_seguir = user.id
             await self.highrise.chat(f"🏃‍♂️ Siguiendo a @{user.username}...")
         
-        elif msg.startswith(f"{config.prefix}seguir "):
-            objetivo = message.replace(f"{config.prefix}seguir ", "").replace("@", "").strip()
+        elif msg.startswith("!seguir "):
+            objetivo = message.replace("!seguir ", "").replace("@", "").strip()
             self.usuario_a_seguir = objetivo
             await self.highrise.chat(f"🏃‍♂️ Buscando y siguiendo a @{objetivo}...")
 
-        elif msg == f"{config.prefix}parar":
+        elif msg == "!parar":
             self.usuario_a_seguir = None
             await self.highrise.chat("🛑 Me quedo aquí.")
 
         # --- SISTEMA DE TRIVIA ---
-        elif msg == f"{config.prefix}trivia":
+        elif msg == "!trivia":
             if self.trivia_activa:
                 await self.highrise.chat("⚠️ Ya hay una trivia en curso. ¡Responde con A, B o C!")
                 return
@@ -181,7 +186,7 @@ class Bot(BaseBot):
                 await self.highrise.chat(f"⏱️ Tiempo agotado. Nadie respondió a tiempo. La respuesta correcta era la ({self.respuesta_trivia.upper()}).")
 
         # --- COMANDO DE TELETRANSPORTE MASIVO (Solo Dueño) ---
-        elif msg == f"{config.prefix}traer todos" and user.username.lower() == USER_DUENO.lower():
+        elif msg == "!traer todos" and user.username.lower() == USER_DUENO.lower():
             try:
                 await self.highrise.chat("🔮 ¡Teletransportando a todos a mi posición actual! 🔮")
                 room_users = await self.highrise.get_room_users()
@@ -201,4 +206,4 @@ class Bot(BaseBot):
                 else:
                     await self.highrise.chat("No se pudo detectar la ubicación exacta del dueño para agruparlos.")
             except Exception as e:
-                print(f"Error en comando {config.prefix}traer todos: {e}")
+                print(f"Error en comando !traer todos: {e}")
