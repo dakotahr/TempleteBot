@@ -25,7 +25,7 @@ threading.Thread(target=run_flask, daemon=True).start()
 # 2. BANCO DE DATOS (FRASES, ANUNCIOS Y TRIVIAS)
 # ==========================================
 FRASES_ANUNCIOS = [
-    "✨ Recuerda dejar tu Like a la sala de @IamDakota para apoyarnos. ✨",
+    "✨ Recuerda dejar tu Like a la sala de @USERNAME para apoyarnos. ✨",
     "💫 'El único modo de hacer un gran trabajo es amar lo que haces.' - Steve Jobs 💫",
     "⚠️ Recuerda seguir las reglas de la sala y mantener un ambiente amigable. ⚠️",
     "🌟 'La vida es 10% lo que te pasa y 90% cómo reaccionas a ello.' 🌟",
@@ -178,7 +178,7 @@ class Bot(BaseBot):
                 # Obtenemos la lista de todas las personas en la sala
                 room_users = await self.highrise.get_room_users()
                 for u, pos in room_users.content:
-                    if u.id != "68654c84f77cce8a0c95eb1b": # No auto-teletransportar al bot
+                    if u.id != "______BOT_TOKEN_AQUI_______": # No auto-teletransportar al bot
                         # Los mueve al lugar donde el bot está parado actualmente
                         await self.highrise.teleport(u.id, Position(self.bot_pos_x, self.bot_pos_y, self.bot_pos_z))
             except Exception as e:
@@ -186,7 +186,7 @@ class Bot(BaseBot):
 
     # Registra la posición del bot continuamente para saber a dónde traer a todos
     async def on_user_move(self, user, pos) -> None:
-        if user.id == "68654c84f77cce8a0c95eb1b": # Si es el bot el que se mueve
+        if user.id == "_______BOT_TOKEN_AQUI______": # Si es el bot el que se mueve
             if isinstance(pos, Position):
                 self.bot_pos_x = pos.x
                 self.bot_pos_y = pos.y
