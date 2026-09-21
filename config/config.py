@@ -1,12 +1,12 @@
 prefix = '/'
 
 # Reemplazamos por tu ID de World actual
-room = '69a113aed41925285a28e3cd'
-token = '9adb3a9add8ff1734b659dcef898469a406fee6d9c1a796bd133c6b003519c0b'
+room = '_______OWNED_ID_AQUI_______'
+token = '_______API_KEY_AQUI_______'
 
-botID = '68654c84f77cce8a0c95eb1b'
-botName = 'BotiNera'
-ownerName = 'IamDakota'
+botID = '_______BOT_TOKEN_______'
+botName = '_______NOMBRE_DEL_BOT_______'
+ownerName = '_NOMBRE_USUARIO_PROPIETARIO_SIN_ARROBA__'
 
 coordinates = {
     'x': 0,
