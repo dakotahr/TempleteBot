@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "¡BotiNera Avanzada está activa!", 200
+    return "¡Bot Avanzado está activo!", 200
 
 def run_flask():
     app.run(host='0.0.0.0', port=10000)
