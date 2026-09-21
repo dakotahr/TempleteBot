@@ -6,7 +6,7 @@ token = '_______API_KEY_AQUI_______'
 
 botID = '_______BOT_TOKEN_______'
 botName = '_______NOMBRE_DEL_BOT_______'
-ownerName = '_NOMBRE_USUARIO_PROPIETARIO_SIN_ARROBA__'
+ownerName = '_NOMBRE_USUARIO_PROP_SIN_ARROBA__'
 
 coordinates = {
     'x': 0,
