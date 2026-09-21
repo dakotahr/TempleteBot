@@ -130,7 +130,7 @@ class Bot(BaseBot):
                 print(f"Error en comando !me: {e}")
 
         # --- COMANDO NUEVO: HACER BAILAR A TODOS EN LA SALA (Solo Dueño) ---
-        elif msg.startswith("!todos ") and user.username.lower() == "iamdakota":
+        elif msg.startswith("!todos ") and user.username.lower() == "__USUARIO_SIN_ARROBA__":
             emote_solicitado = message.replace("!todos ", "").strip()
             try:
                 await self.highrise.chat(f"🥳 ¡Coreografía masiva! Todos hacemos: {emote_solicitado} 🥳")
