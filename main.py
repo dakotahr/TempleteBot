@@ -6,6 +6,20 @@ from flask import Flask
 from highrise import BaseBot
 from highrise.models import Position
 
+# =========================================================================
+# ⚙️ CONFIGURACIÓN DE LA PLANTILLA (CAMBIAR ESTOS DATOS PARA CADA PROYECTO)
+# =========================================================================
+# Escribí el nombre de usuario de Telegram/Highrise del dueño (en minúsculas)
+USER_DUENO = "PONER_AQUI_EL_USUARIO_DEL_DUENO"  
+
+# Poné el ID numérico/técnico único de este bot (para evitar que se auto-afecte)
+ID_BOT_SALA = "PONER_AQUI_EL_ID_DEL_BOT"  
+
+# Nombre personalizado para el panel web del servidor gratuito
+NOMBRE_DEL_BOT_WEB = "¡Bot Plantilla Base está activa!"
+# =========================================================================
+
+
 # ==========================================
 # 1. SERVIDOR FALSO PARA RENDER GRATUITO
 # ==========================================
@@ -13,7 +27,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "¡BotiNera Avanzada está activa!", 200
+    return NOMBRE_DEL_BOT_WEB, 200
 
 def run_flask():
     app.run(host='0.0.0.0', port=10000)
@@ -25,7 +39,7 @@ threading.Thread(target=run_flask, daemon=True).start()
 # 2. BANCO DE DATOS (FRASES, ANUNCIOS Y TRIVIAS)
 # ==========================================
 FRASES_ANUNCIOS = [
-    "✨ Recuerda dejar tu Like a la sala de @IamDakota para apoyarnos. ✨",
+    f"✨ Recuerda dejar tu Like a la sala de @{USER_DUENO} para apoyarnos. ✨",
     "💫 'El único modo de hacer un gran trabajo es amar lo que haces.' - Steve Jobs 💫",
     "⚠️ Recuerda seguir las reglas de la sala y mantener un ambiente amigable. ⚠️",
     "🌟 'La vida es 10% lo que te pasa y 90% cómo reaccionas a ello.' 🌟",
@@ -83,7 +97,7 @@ class Bot(BaseBot):
                 await self.highrise.chat(frase)
 
     async def on_start(self, session_metadata, room_permissions=None) -> None:
-        print("¡BotiNera ingresó a la sala con éxito!")
+        print("¡El bot ingresó a la sala con éxito!")
         await asyncio.sleep(2)
         await self.highrise.send_emote("dance-tiktok8")
         # Iniciamos el bucle inteligente en segundo plano
@@ -130,7 +144,7 @@ class Bot(BaseBot):
                 print(f"Error en comando !me: {e}")
 
         # --- COMANDO NUEVO: HACER BAILAR A TODOS EN LA SALA (Solo Dueño) ---
-        elif msg.startswith("!todos ") and user.username.lower() == "iamdakota":
+        elif msg.startswith("!todos ") and user.username.lower() == USER_DUENO.lower():
             emote_solicitado = message.replace("!todos ", "").strip()
             try:
                 await self.highrise.chat(f"🥳 ¡Coreografía masiva! Todos hacemos: {emote_solicitado} 🥳")
@@ -172,41 +186,24 @@ class Bot(BaseBot):
                 await self.highrise.chat(f"⏱️ Tiempo agotado. Nadie respondió a tiempo. La respuesta correcta era la ({self.respuesta_trivia.upper()}).")
 
         # --- COMANDO DE TELETRANSPORTE MASIVO (Solo Dueño) ---
-        elif msg == "!traer todos" and user.username.lower() == "iamdakota":
+        elif msg == "!traer todos" and user.username.lower() == USER_DUENO.lower():
             try:
                 await self.highrise.chat("🔮 ¡Teletransportando a todos a mi posición actual! 🔮")
-                # Obtenemos la lista de todas las personas en la sala
                 room_users = await self.highrise.get_room_users()
+                
+                # Buscamos primero las coordenadas del dueño de la sala
+                posicion_destino = None
                 for u, pos in room_users.content:
-                    if u.id != "68654c84f77cce8a0c95eb1b": # No auto-teletransportar al bot
-                        # Los mueve al lugar donde el bot está parado actualmente
-                        await self.highrise.teleport(u.id, Position(self.bot_pos_x, self.bot_pos_y, self.bot_pos_z))
+                    if u.username.lower() == USER_DUENO.lower() and isinstance(pos, Position):
+                        posicion_destino = pos
+                        break
+                
+                # Si encontramos al dueño, movemos al resto hacia él
+                if posicion_destino:
+                    for u, pos in room_users.content:
+                        if u.id != ID_BOT_SALA and u.username.lower() != USER_DUENO.lower(): 
+                            await self.highrise.teleport(u.id, Position(posicion_destino.x + 0.2, posicion_destino.y, posicion_destino.z))
+                else:
+                    await self.highrise.chat("No se pudo detectar la ubicación exacta del dueño para agruparlos.")
             except Exception as e:
-                print(f"Error en teletransporte masivo: {e}")
-
-    # Registra la posición del bot continuamente para saber a dónde traer a todos
-    async def on_user_move(self, user, pos) -> None:
-        if user.id == "68654c84f77cce8a0c95eb1b": # Si es el bot el que se mueve
-            if isinstance(pos, Position):
-                self.bot_pos_x = pos.x
-                self.bot_pos_y = pos.y
-                self.bot_pos_z = pos.z
-
-    async def on_user_join(self, user, position) -> None:
-        # Sumamos 1 al contador de visitas general de la sala
-        self.contador_visitas += 1
-        try:
-            await self.highrise.send_whisper(user.id, f"¡Hola {user.username}! Bienvenido a la sala. Pasala genial. ❤️")
-        except:
-            pass
-
-
-# ==========================================
-# 4. ENTRADA Y CONEXIÓN AL JUEGO (CONFIG)
-# ==========================================
-if __name__ == "__main__":
-    from highrise.__main__ import main, BotDefinition
-    from config.config import room, token
-    
-    definitions = [BotDefinition(Bot(), room, token)]
-    asyncio.run(main(definitions))
+                print(f"Error en comando !traer todos: {e}")
