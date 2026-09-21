@@ -11,13 +11,13 @@ room = 'PONER_AQUI_EL_ID_DE_LA_SALA'
 # Token de autenticación de la API de Highrise para este bot específico
 token = 'PONER_AQUI_EL_TOKEN_DEL_BOT'
 
-# ID numérico/técnico del bot (para evitar que el bot se teletransporte a sí mismo)
+# ID numérico/técnico del bot (se usa para evitar que el bot se teletransporte a sí mismo)
 botID = 'PONER_AQUI_EL_ID_TECNICO_DEL_BOT'
 
 # Nombre visible que tendrá el bot dentro de la sala
 botName = 'PONER_AQUI_EL_NOMBRE_DEL_BOT'
 
-# Nombre de usuario de Highrise del dueño de la sala (comandos de administrador)
+# Nombre de usuario de Highrise del dueño de la sala (quien tendrá los comandos de administrador)
 ownerName = 'PONER_AQUI_EL_USUARIO_DEL_DUENO'
 
 # Coordenadas iniciales donde aparecerá el bot al entrar a la sala
